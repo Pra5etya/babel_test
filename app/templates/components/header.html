@@ -1,0 +1,130 @@
+<nav class="bg-gray-800 text-white shadow-md">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16 items-center">
+      
+      <!-- Kiri: Logo / Nama -->
+      <div class="flex-shrink-0 text-xl font-bold">
+        {{ t_static.site_name }}
+      </div>
+
+      <!-- Desktop Menu -->
+      <div class="hidden md:flex items-center space-x-6">
+        <a href="{{ url_for('main.index', lang=current_lang) }}" 
+           class="hover:text-yellow-400 transition-colors">
+          {{ t_static.menu_home }}
+        </a>
+        <a href="{{ url_for('main.about', lang=current_lang) }}" 
+           class="hover:text-yellow-400 transition-colors">
+          {{ t_static.menu_about }}
+        </a>
+        <span class="hover:text-yellow-400 transition-colors cursor-pointer">
+          {{ t_static.menu_blog }}
+        </span>
+
+        <!-- Language Switcher -->
+        <select id="langSwitcher" 
+                class="ml-4 bg-gray-700 text-white px-3 py-2 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+          {% set langs = ['en','id','fr','ko','ja'] %}
+          
+          {% for lang in langs %}
+
+            {% if request.view_args %}
+              {% set args = request.view_args.copy() %}
+
+            {% else %}
+              {% set args = {} %}
+
+            {% endif %}
+
+            {% set _ = args.update({'lang': lang}) %}
+            {% set endpoint = request.endpoint or 'main.index' %}
+            {% set target = url_for(endpoint, **args) %}
+
+            <option value="{{ target }}" {% if lang == current_lang %}selected{% endif %}>
+              {{ lang.upper() }}
+            </option>
+            
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Mobile Hamburger -->
+      <div class="md:hidden">
+        <button id="menuToggle" class="focus:outline-none">
+          <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu Panel -->
+  <div id="mobileMenu" class="hidden md:hidden bg-gray-700 px-4 pb-4 space-y-3">
+    <a href="{{ url_for('main.index', lang=current_lang) }}" 
+       class="block py-2 hover:text-yellow-400">
+      {{ t_static.menu_home }}
+    </a>
+    <a href="{{ url_for('main.about', lang=current_lang) }}" 
+       class="block py-2 hover:text-yellow-400">
+      {{ t_static.menu_about }}
+    </a>
+    <span class="block py-2 hover:text-yellow-400 cursor-pointer">
+      {{ t_static.menu_blog }}
+    </span>
+
+    <!-- Language Switcher -->
+    <select id="langSwitcherMobile" 
+            class="w-full bg-gray-600 text-white px-3 py-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+
+      {% for lang in langs %}
+
+        {% if request.view_args %}
+          {% set args = request.view_args.copy() %}
+
+        {% else %}
+          {% set args = {} %}
+
+        {% endif %}
+
+        {% set _ = args.update({'lang': lang}) %}
+        {% set endpoint = request.endpoint or 'main.index' %}
+        {% set target = url_for(endpoint, **args) %}
+        
+        <option value="{{ target }}" {% if lang == current_lang %}selected{% endif %}>
+          {{ lang.upper() }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+</nav>
+
+<script>
+  (function(){
+    // Desktop Lang Switcher
+    const langSel = document.getElementById('langSwitcher');
+    if (langSel) {
+      langSel.addEventListener('change', function () {
+        if (this.value) window.location.href = this.value;
+      });
+    }
+
+    // Mobile Lang Switcher
+    const langSelMobile = document.getElementById('langSwitcherMobile');
+    if (langSelMobile) {
+      langSelMobile.addEventListener('change', function () {
+        if (this.value) window.location.href = this.value;
+      });
+    }
+
+    // Hamburger toggle
+    const menuBtn = document.getElementById('menuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (menuBtn && mobileMenu) {
+      menuBtn.addEventListener('click', function () {
+        mobileMenu.classList.toggle('hidden');
+      });
+    }
+  })();
+</script>

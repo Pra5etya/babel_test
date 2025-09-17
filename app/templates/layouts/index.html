@@ -1,0 +1,9 @@
+{% extends "components/base.html" %}
+
+{% block content %}
+<title>{{ t_static.site_name }}</title>
+
+<section id="hero" class="bg-gray-100 py-12">
+  {% include 'sections/sample/landing.html' %}
+</section>
+{% endblock %}
