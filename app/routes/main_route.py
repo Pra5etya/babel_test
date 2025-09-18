@@ -21,7 +21,7 @@ def inject_translations():
 
     return {
         "t_static": get_static_translation(lang),       # statis → dict
-        "t_dynamic": get_dynamic_translation(lang),     # dinamis → gettext()
+        "t_dynamic": get_dynamic_translation(),         # dinamis → gettext()
         "current_lang": lang
     }
 

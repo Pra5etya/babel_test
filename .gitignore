@@ -13,3 +13,7 @@ config/__pycache__
 
 # log
 logs
+
+# translations
+messages.pot
+translations
