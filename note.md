@@ -11,11 +11,12 @@ Menangani:
 
 # penggunaan babel
 1. ditandai di halaman (gettext atau _)
-
+2. pastikan pakai " bukan ' karena extractor jinja2 lebih konsisten nangkep double-quoted strings.
 
 
 # Step babel
-1. pybabel extract -F babel.cfg -o messages.pot (tempat aplikasi utama) --ignore-dir= (nama env dir)
+1. pybabel extract -F babel.cfg -o messages.pot app --ignore-dir=win_env --verbose
+
     ```bash
     pybabel extract -F babel.cfg -o messages.pot . \
   --ignore-dir=win_env \
