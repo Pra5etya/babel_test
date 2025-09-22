@@ -27,3 +27,10 @@ def register_config(app):
     from app.extensions import setup_extension
 
     setup_extension(app)
+
+
+    # 2.4 CLI setup
+    # =================
+    from app.cli import setup_cli
+
+    setup_cli(app)

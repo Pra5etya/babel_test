@@ -7,12 +7,16 @@ mac_env
 app/__pycache__
 app/extensions/__pycache__
 app/routes/__pycache__
+app/cli/__pycache__
+
 
 # config
 config/__pycache__
 
+
 # log
 logs
+
 
 # translations
 messages.pot

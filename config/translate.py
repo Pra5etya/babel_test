@@ -46,7 +46,7 @@ static_translate = {
 }
 
 
-LANGS = ["id", "en", "fr", "ko", "ja"]
+LANGS = ["id", "fr", "ko", "ja"]
 DEFAULT = "en"
 
 def get_lang(lang: str) -> str:

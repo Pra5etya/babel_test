@@ -1,5 +1,4 @@
 # Flask-Babel = alat untuk membuat aplikasi Flask multi-bahasa.
-
 Menangani:
 * Terjemahan teks (i18n)
 * Pemilihan bahasa otomatis
@@ -14,20 +13,27 @@ Menangani:
 2. pastikan pakai " bukan ' karena extractor jinja2 lebih konsisten nangkep double-quoted strings.
 
 
-# Step babel
-1. pybabel extract -F babel.cfg -o messages.pot app --ignore-dir=win_env --verbose
+# String Extracted
 
-    ```bash
-    pybabel extract -F babel.cfg -o messages.pot . \
-  --ignore-dir=win_env \
-  --ignore-dir=config
+1. Penggunaan string yang ada di html untuk di translasi jangan dipisahkan perbaris (gunakan gettext atau _), misal
+    ```html
+    <p>
+      {{ _("In addition, this system will also be tested across different devices, 
+            "from desktops with large screens to mobile phones with smaller displays. "
+            "Longer text like this is useful to test how responsive design behaves. "
+            "Will the text remain neatly formatted when wrapped, or will it cause layout issues instead?"
+      ) }}
+    </p>
 
+    tapi seperti berikut:
+
+    <p>
+      {{ _("In addition, this system will also be tested across different devices, 
+           from desktops with large screens to mobile phones with smaller displays. 
+           Longer text like this is useful to test how responsive design behaves. 
+           Will the text remain neatly formatted when wrapped, or will it cause layout issues instead?") }}
+    </p>
     ```
-
-2. pybabel init -i messages.pot -d app/translations -l (kode translate yang di inginkan) -> penyesuaian di babel
-
-3. pybabel compile -d app/translations
-
 
 
 # Jika terdapat dua kata misal:
@@ -46,3 +52,25 @@ Kamu mau kasus seperti ini: "saham merupakan IPO"
     msgstr "Stock is %(ipo)s"
     ```
 
+# Step babel
+1. pybabel extract -F babel.cfg -o messages.pot app
+2. pybabel init -i messages.pot -d translations -l (berdasarkan kode di babel) -> dilakukan sekali saja
+3. pybabel compile -d translations
+4. pybabel update -i messages.pot -d translations   (Gunakan jika ada terjemahan baru baru)
+
+
+## ⚡ Ringkasnya:
+* Kalau source code berubah → extract + init(sekali saja) + edit .po + update + compile
+* Kalau hanya isi terjemahan berubah → cukup compile saja
+
+
+# 📊 Perbandingan Tools Translasi .po
+
+| Tool / Platform                    | Open Source?                           | Mode Kerja                       | Kelebihan                                                                 | Kekurangan                                                |
+| ---------------------------------- | -------------------------------------- | -------------------------------- | ------------------------------------------------------------------------- | --------------------------------------------------------- |
+| **Poedit**                         | ❌ (proprietary, tapi ada versi gratis) | Aplikasi desktop (Win/Mac/Linux) | Mudah dipakai, ada memory, bisa auto-suggest, ada QA check                | Closed-source, fitur MT penuh butuh Pro                   |
+| **Weblate**                        | ✅ (GPLv3)                              | Web-based, bisa self-host        | Full control (server sendiri), collaborative, integrasi Git, ada QA check | Setup agak berat (butuh server), lebih cocok untuk tim    |
+| **Pootle**                         | ✅ (GPLv3)                              | Web-based, self-host             | Open source, fokus ke `.po`, cocok untuk komunitas                        | Development sudah tidak aktif, UI agak ketinggalan zaman  |
+| **POEditor**                       | ❌ (SaaS)                               | Web-based (cloud)                | Mudah dipakai, banyak integrasi                                           | Data di server pihak ketiga, berbayar untuk fitur lengkap |
+| **Crowdin / Transifex**            | ❌ (SaaS)                               | Web-based (cloud)                | Banyak fitur enterprise, integrasi CI/CD                                  | Tidak open source, data ada di server mereka              |
+| **Manual (VS Code, Vim, Sublime)** | ✅ (editor-nya open source/free)        | Text editor                      | Kendali penuh, ringan, bisa pakai plugin gettext                          | Tidak ada fitur bantu (TM, QA check, glossary)            |
