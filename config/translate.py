@@ -8,14 +8,14 @@ static_translate = {
         "footer_text": "Hak Cipta © 2025 WebsiteKu"
     },
 
-    "en": {
-        "site_name": "MyWebsite",
-        "menu_home": "Home",
-        "menu_services": "Services",
-        "menu_blog": "Blog",
-        "menu_about": "About",
-        "footer_text": "Copyright © 2025 MyWebsite"
-    },
+    # "en": {
+    #     "site_name": "MyWebsite",
+    #     "menu_home": "Home",
+    #     "menu_services": "Services",
+    #     "menu_blog": "Blog",
+    #     "menu_about": "About",
+    #     "footer_text": "Copyright © 2025 MyWebsite"
+    # },
     
     "fr": {
         "site_name": "MonSite",

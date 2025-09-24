@@ -32,16 +32,6 @@ def register_translate_cli(app: Flask):
             click.echo(f"\✅ Initialized translation for {lang}\n")
 
     @translate.command()
-    def update():
-        """Update translations for all LANGS"""
-        subprocess.run(
-            ["pybabel", "update", "-i", "messages.pot", "-d", "translations"],
-            check=True
-        )
-
-        click.echo("\n✅ Translations updated")
-
-    @translate.command()
     def compile():
         """Compile translations to .mo files"""
         subprocess.run(
@@ -50,3 +40,13 @@ def register_translate_cli(app: Flask):
         )
 
         click.echo("\n✅ Translations compiled")
+
+    @translate.command()
+    def update():
+        """Update translations for all LANGS"""
+        subprocess.run(
+            ["pybabel", "update", "-i", "messages.pot", "-d", "translations"],
+            check=True
+        )
+
+        click.echo("\n✅ Translations updated")
