@@ -6,7 +6,7 @@ def setup_secret(app):
         # 
         SECRET_KEY = "your-secret-key",
 
-        # 
+        # Babel versi lama
         BABEL_DEFAULT_LOCALE = "en",
         BABEL_SUPPORTED_LOCALES = LANGS, 
         BABEL_TRANSLATION_DIRECTORIES = "translations", 

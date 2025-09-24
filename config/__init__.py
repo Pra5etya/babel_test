@@ -3,17 +3,7 @@ def register_config(app):
     # =================
     from config.logger import setup_logger
 
-    logger = setup_logger()
-
-
-    import os
-    
-    if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':   # log dimulai ketika restart
-        boundary = "="  * 30
-
-        logger.info(f"{boundary} LOGGER STARTING POINT {boundary} \n")
-        logger.info("Flask is restarting...")
-        logger.info("Log Start ... \n")
+    setup_logger()    
 
     # 2.2 Secret setup
     # =================

@@ -42,6 +42,13 @@ def setup_logger():
             handler.stream.write("\n")  # enter kosong
             handler.flush()
 
+        if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':   # log dimulai ketika restart
+            boundary = "="  * 30
+
+            logger.info(f"{boundary} LOGGER STARTING POINT {boundary} \n")
+            logger.info("Flask is restarting...")
+            logger.info("Log Start ... \n")
+
         # Daftarkan sekali saja
         atexit.register(write_exit_lines)
 

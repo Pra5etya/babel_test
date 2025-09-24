@@ -2,55 +2,54 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between h-16 items-center">
       
-      <!-- Kiri: Logo / Nama -->
+      <!-- Bagian kiri: Logo atau Nama Website -->
       <div class="flex-shrink-0 text-xl font-bold">
         {{ t_static.site_name }}
       </div>
 
-      <!-- Desktop Menu -->
+      <!-- Menu Desktop (hidden di mobile, muncul di layar >= md) -->
       <div class="hidden md:flex items-center space-x-6">
+        <!-- Link ke halaman Home dengan bahasa saat ini -->
         <a href="{{ url_for('main.index', lang=current_lang) }}" 
            class="hover:text-yellow-400 transition-colors">
           {{ t_static.menu_home }}
         </a>
+
+        <!-- Link ke halaman About -->
         <a href="{{ url_for('main.about', lang=current_lang) }}" 
            class="hover:text-yellow-400 transition-colors">
           {{ t_static.menu_about }}
         </a>
+
+        <!-- Placeholder untuk menu Blog -->
         <span class="hover:text-yellow-400 transition-colors cursor-pointer">
           {{ t_static.menu_blog }}
         </span>
 
-        <!-- Language Switcher -->
+        <!-- Dropdown untuk switch bahasa -->
         <select id="langSwitcher" 
                 class="ml-4 bg-gray-700 text-white px-3 py-2 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-yellow-400">
-          {% set langs = ['en','id','fr','ko','ja'] %}
-          
-          {% for lang in langs %}
 
-            {% if request.view_args %}
-              {% set args = request.view_args.copy() %}
-
-            {% else %}
-              {% set args = {} %}
-
-            {% endif %}
-
+          {% for lang in LANGS %}
+            {# Copy parameter view_args saat ini (misal: {lang:'id'}) #}
+            {% set args = request.view_args.copy() if request.view_args else {} %}
+            {# Update parameter lang sesuai loop #}
             {% set _ = args.update({'lang': lang}) %}
+            {# Gunakan endpoint saat ini, default ke main.index jika kosong #}
             {% set endpoint = request.endpoint or 'main.index' %}
-            {% set target = url_for(endpoint, **args) %}
-
-            <option value="{{ target }}" {% if lang == current_lang %}selected{% endif %}>
+            
+            <!-- Set value ke URL target -->
+            <option value="{{ url_for(endpoint, **args) }}" {% if lang == current_lang %}selected{% endif %}>
               {{ lang.upper() }}
             </option>
-            
           {% endfor %}
         </select>
       </div>
 
-      <!-- Mobile Hamburger -->
+      <!-- Tombol hamburger (muncul hanya di mobile) -->
       <div class="md:hidden">
         <button id="menuToggle" class="focus:outline-none">
+          <!-- Ikon hamburger (3 garis) -->
           <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                   d="M4 6h16M4 12h16M4 18h16"/>
@@ -60,39 +59,34 @@
     </div>
   </div>
 
-  <!-- Mobile Menu Panel -->
+  <!-- Panel Menu untuk Mobile (default hidden) -->
   <div id="mobileMenu" class="hidden md:hidden bg-gray-700 px-4 pb-4 space-y-3">
+    <!-- Menu Home -->
     <a href="{{ url_for('main.index', lang=current_lang) }}" 
        class="block py-2 hover:text-yellow-400">
       {{ t_static.menu_home }}
     </a>
+
+    <!-- Menu About -->
     <a href="{{ url_for('main.about', lang=current_lang) }}" 
        class="block py-2 hover:text-yellow-400">
       {{ t_static.menu_about }}
     </a>
+
+    <!-- Placeholder untuk Blog -->
     <span class="block py-2 hover:text-yellow-400 cursor-pointer">
       {{ t_static.menu_blog }}
     </span>
 
-    <!-- Language Switcher -->
+    <!-- Dropdown Language Switcher untuk Mobile -->
     <select id="langSwitcherMobile" 
             class="w-full bg-gray-600 text-white px-3 py-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400">
 
-      {% for lang in langs %}
-
-        {% if request.view_args %}
-          {% set args = request.view_args.copy() %}
-
-        {% else %}
-          {% set args = {} %}
-
-        {% endif %}
-
+      {% for lang in LANGS %}
+        {% set args = request.view_args.copy() if request.view_args else {} %}
         {% set _ = args.update({'lang': lang}) %}
         {% set endpoint = request.endpoint or 'main.index' %}
-        {% set target = url_for(endpoint, **args) %}
-        
-        <option value="{{ target }}" {% if lang == current_lang %}selected{% endif %}>
+        <option value="{{ url_for(endpoint, **args) }}" {% if lang == current_lang %}selected{% endif %}>
           {{ lang.upper() }}
         </option>
       {% endfor %}
@@ -100,9 +94,10 @@
   </div>
 </nav>
 
+
 <script>
   (function(){
-    // Desktop Lang Switcher
+    // Desktop Language Switcher → reload ke URL value yang dipilih
     const langSel = document.getElementById('langSwitcher');
     if (langSel) {
       langSel.addEventListener('change', function () {
@@ -110,7 +105,7 @@
       });
     }
 
-    // Mobile Lang Switcher
+    // Mobile Language Switcher → sama, tapi untuk mobile dropdown
     const langSelMobile = document.getElementById('langSwitcherMobile');
     if (langSelMobile) {
       langSelMobile.addEventListener('change', function () {
@@ -118,7 +113,7 @@
       });
     }
 
-    // Hamburger toggle
+    // Toggle menu mobile saat tombol hamburger ditekan
     const menuBtn = document.getElementById('menuToggle');
     const mobileMenu = document.getElementById('mobileMenu');
     if (menuBtn && mobileMenu) {
