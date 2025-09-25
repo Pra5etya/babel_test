@@ -3,34 +3,24 @@
 {% block content %}
 <section class="max-w-3xl mx-auto px-6 py-10">
   <h1 class="text-2xl font-bold mb-6">
-    About Page (Current language: <span class="text-blue-600">{{ current_lang }}</span>)
+    {{ gettext("About Page (Current language): ") }} <span class="text-blue-600">{{ current_lang }}</span>
   </h1>
 
   <div class="space-y-6 text-gray-700 leading-relaxed">
     <p>
-      This is an example of an "About" page in <strong>{{ current_lang }}</strong>.  
-      With multi-language support, users from around the world can easily 
-      understand the content according to their selected language.
+      {{ gettext("This is an example of an 'About' page in <strong>{{ current_lang }}</strong>. With multi-language support, users from around the world can easily understand the content according to their selected language.") | safe }}
     </p>
 
     <p>
-      The main goal of this project is to build an interface that is flexible, 
-      user-friendly, and easy to extend. For example, when the user switches 
-      the language to English, all the text on this page will automatically change.
+      {{ gettext("The main goal of this project is to build an interface that is flexible, user-friendly, and easy to extend. For example, when the user switches the language to English, all the text on this page will automatically change.") |safe }}
     </p>
 
     <p>
-      Another example: this application supports navigation, action buttons, 
-      and error messages in multiple languages. This is important to ensure 
-      a consistent user experience. All text strings are managed inside 
-      <code>.po</code> files so they can be translated correctly.
+      {{ gettext("Another example: this application supports navigation, action buttons, and error messages in multiple languages. This is important to ensure a consistent user experience. All text strings are managed inside <code>.po</code> files so they can be translated correctly.") | safe }}
     </p>
 
     <p>
-      In addition, this system will also be tested across different devices, 
-      from desktops with large screens to mobile phones with smaller displays. 
-      Longer text like this is useful for testing responsive design. Will the 
-      text remain neatly formatted when wrapped, or will it cause layout issues instead?
+      {{ gettext("In addition, this system will also be tested across different devices, from desktops with large screens to mobile phones with smaller displays. Longer text like this is useful for testing responsive design. Will the text remain neatly formatted when wrapped, or will it cause layout issues instead?") | safe }}
     </p>
   </div>
 </section>
