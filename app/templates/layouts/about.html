@@ -3,12 +3,12 @@
 {% block content %}
 <section class="max-w-3xl mx-auto px-6 py-10">
   <h1 class="text-2xl font-bold mb-6">
-    {{ gettext("About Page (Current language): ") }} <span class="text-blue-600">{{ current_lang }}</span>
+    {{ gettext('About Page (Current language): <span class="text-blue-600">{lang}</span>').format(lang=current_lang) | safe }}
   </h1>
 
   <div class="space-y-6 text-gray-700 leading-relaxed">
     <p>
-      {{ gettext("This is an example of an 'About' page in <strong>{{ current_lang }}</strong>. With multi-language support, users from around the world can easily understand the content according to their selected language.") | safe }}
+      {{ gettext("This is an example of an 'About' page in <strong>{lang}</strong>. With multi-language support, users from around the world can easily understand the content according to their selected language.").format(lang=current_lang) | safe }}
     </p>
 
     <p>

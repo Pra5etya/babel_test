@@ -1,8 +1,8 @@
 from flask import Flask
 from config.translate import LANGS
+from googletrans import Translator  # pip install googletrans==4.0.0-rc1 (versi stabil)
 
 import subprocess, click, os
-from googletrans import Translator  # pip install googletrans==4.0.0-rc1 (versi stabil)
 
 
 def register_translate_cli(app: Flask):
@@ -43,50 +43,86 @@ def register_translate_cli(app: Flask):
     def auto():
         """
         Automatically translate msgid -> msgstr in all LANGS
-        Only fills empty msgstr, does not overwrite existing translations
+        Handles multi-line msgid and only fills empty msgstr.
+        Shows progress in realtime.
         """
         po_dir = "translations"
         translator = Translator()
         total_files = 0
 
-        for lang in LANGS:
-            for root, dirs, files in os.walk(po_dir):
-                for file in files:
-                    if file.endswith(f"{lang}.po"):
-                        po_path = os.path.join(root, file)
-                        with open(po_path, "r", encoding="utf-8") as f:
-                            lines = f.readlines()
+        if not os.path.exists(po_dir):
+            click.echo(f"❌ Directory '{po_dir}' does not exist. Please check path.")
+            return
 
-                        new_lines = []
+        for lang in LANGS:
+            lang_path = os.path.join(po_dir, lang, "LC_MESSAGES")
+            if not os.path.exists(lang_path):
+                click.echo(f"⚠️  No folder found for language '{lang}' at '{lang_path}'")
+                continue
+
+            po_files = [f for f in os.listdir(lang_path) if f.endswith(".po")]
+            if not po_files:
+                click.echo(f"⚠️  No .po files found for language '{lang}' in '{lang_path}'")
+                continue
+
+            for file in po_files:
+                po_path = os.path.join(lang_path, file)
+                click.echo(f"\nTranslating {po_path} → {lang}...")
+
+                with open(po_path, "r", encoding="utf-8") as f:
+                    lines = f.readlines()
+
+                new_lines = []
+                inside_msgid = False
+                msgid_text = ""
+                msgid_lines = []
+                translated_count = 0
+
+                for line in lines:
+                    stripped = line.strip()
+
+                    if stripped.startswith("msgid"):
+                        inside_msgid = True
+                        msgid_lines = [line]
+                        msgid_text = stripped[6:].strip('"')
+
+                    elif inside_msgid and stripped.startswith('"'):
+                        # Tambahkan baris multi-line msgid
+                        msgid_text += stripped.strip('"')
+                        msgid_lines.append(line)
+
+                    elif inside_msgid and stripped.startswith("msgstr"):
+                        current_msgstr = stripped[7:].strip('"')
+                        new_lines.extend(msgid_lines)  # tulis kembali semua baris msgid
+                        if not current_msgstr and msgid_text:
+                            try:
+                                translation = translator.translate(msgid_text, dest=lang).text
+
+                            except Exception:
+                                translation = msgid_text
+
+                            new_lines.append(f'msgstr "{translation}"\n')
+                            translated_count += 1
+
+                            click.echo(f"  → Translated: {msgid_text[:50]}...")
+
+                        else:
+                            new_lines.append(line)
+                            
                         inside_msgid = False
                         msgid_text = ""
-                        for line in lines:
-                            stripped = line.strip()
-                            if stripped.startswith("msgid "):
-                                inside_msgid = True
-                                msgid_text = stripped[6:].strip('"')
-                                new_lines.append(line)
-                            elif inside_msgid and stripped.startswith("msgstr "):
-                                # Hanya translate jika msgstr kosong
-                                current_msgstr = stripped[7:].strip('"')
-                                if not current_msgstr and msgid_text:
-                                    try:
-                                        translation = translator.translate(msgid_text, dest=lang).text
-                                    except Exception:
-                                        translation = msgid_text  # fallback
-                                    new_lines.append(f'msgstr "{translation}"\n')
-                                else:
-                                    new_lines.append(line)
-                                inside_msgid = False
-                                msgid_text = ""
-                            else:
-                                new_lines.append(line)
+                        msgid_lines = []
 
-                        with open(po_path, "w", encoding="utf-8") as f:
-                            f.writelines(new_lines)
-                        total_files += 1
+                    else:
+                        new_lines.append(line)
 
-        click.echo(f"\n✅ Auto-translated empty msgstr for all LANGS in {total_files} file(s)")
+                with open(po_path, "w", encoding="utf-8") as f:
+                    f.writelines(new_lines)
+
+                total_files += 1
+                click.echo(f"✅ Finished {po_path} → {translated_count} strings translated")
+
+        click.echo(f"\n🎉 Auto-translation completed for all LANGS in {total_files} file(s)")
 
     @translate.command()
     def update():
