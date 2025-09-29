@@ -5,6 +5,7 @@ from .batch_lang import LANG_FUNCTIONS
 def auto_translate():
     """
     Automatically translate msgid -> msgstr in all LANGS.
+    - Always overwrites msgstr with new translation (not just empty ones).
     - Uses per-language functions from batch_lang.py
     """
     po_dir = "translations"
@@ -55,17 +56,20 @@ def auto_translate():
                     msgid_lines.append(line)
 
                 elif inside_msgid and stripped.startswith("msgstr"):
-                    current_msgstr = stripped[7:].strip('"')
+                    # ambil msgid
                     new_lines.extend(msgid_lines)
 
-                    if not current_msgstr and msgid_text:
+                    if msgid_text:  # hanya translate kalau msgid ada isinya
                         translation = translate_func(msgid_text)
-                        new_lines.extend(format_po_multiline(translation, indent="", width=80))
+                        new_lines.extend(
+                            format_po_multiline(translation, indent="", width=80)
+                        )
 
                         if translation:
                             translated_count += 1
                             click.echo(f"  ✔ {msgid_text[:50]}...")
                     else:
+                        # kalau msgid kosong (header), jangan translate
                         new_lines.append(line)
 
                     inside_msgid, msgid_text, msgid_lines = False, "", []
