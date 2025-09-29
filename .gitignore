@@ -8,7 +8,7 @@ app/__pycache__
 app/extensions/__pycache__
 app/routes/__pycache__
 app/cli/__pycache__
-
+app/cli/translate/__pycache__
 
 # config
 config/__pycache__

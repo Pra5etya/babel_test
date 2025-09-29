@@ -1,3 +1,6 @@
+import re
+from typing import Tuple, Dict
+
 # ==============================
 # Static Translations (untuk UI statis)
 # ==============================
@@ -69,3 +72,102 @@ def get_lang(lang: str) -> str:
         return DEFAULT
 
     return LANGS[0] if LANGS else "en"
+
+
+# ==============================
+# Mapping ke Google Translate
+# ==============================
+GOOGLE_TRANS_LANGS = {
+    "en": "en",
+    "id": "id",
+    "fr": "fr",
+    "de": "de",
+    "ar": "ar",
+    "ja": "ja",
+    "ko": "ko",
+    # tambahkan sesuai kebutuhan
+}
+
+
+def normalize_lang(lang: str) -> str:
+    """Convert LANGS entry into googletrans compatible code"""
+    return GOOGLE_TRANS_LANGS.get(lang, lang.split("_")[0])
+
+
+# ==============================
+# Tokenizer → melindungi placeholder & HTML
+# ==============================
+def protect_tokens(text: str) -> Tuple[str, Dict[str, str]]:
+    """
+    Freeze placeholders {var} dan HTML <...>
+    Return (teks aman, mapping token->asli)
+    """
+    mapping = {}
+    idx = 0
+
+    def repl(m):
+        nonlocal idx
+        token = f"[[T{idx}]]"
+        mapping[token] = m.group(0)
+        idx += 1
+        return token
+
+    safe_text = re.sub(r"\{.*?\}|<.*?>", repl, text)
+    return safe_text, mapping
+
+
+def restore_tokens(text: str, mapping: Dict[str, str]) -> str:
+    """Kembalikan token menjadi placeholder/HTML asli"""
+    for token, original in mapping.items():
+        text = text.replace(token, original)
+    return text
+
+
+# ==============================
+# Output formatting
+# ==============================
+def fix_punctuation_spacing(text: str) -> str:
+    """
+    Pastikan ada spasi setelah titik.
+    Contoh: "Halo.Dunia." -> "Halo. Dunia."
+    """
+    return re.sub(r"\.(\S)", r". \1", text)
+
+
+def normalize_output(text: str) -> str:
+    """Rapikan escape dan spasi"""
+    return (
+        text.replace('\\"', '"')
+        .replace("  ", " ")
+        .replace(" ]]", "]]")  # jaga bracket biar gak rusak
+        .strip()
+    )
+
+
+def format_po_multiline(text: str, indent: str = "", width: int = 80) -> list[str]:
+    """
+    Format string ke format multi-line untuk .po file.
+    Contoh:
+    msgstr ""
+    "Kalimat pertama "
+    "lanjutan kalimat."
+    """
+    if not text:
+        return ['msgstr ""\n']
+
+    # Pisahkan ke beberapa baris agar tidak melebihi lebar
+    chunks, line = [], ""
+    for word in text.split():
+        if len(line) + len(word) + 1 > width:
+            chunks.append(line)
+            line = word
+        else:
+            line = f"{line} {word}".strip()
+    if line:
+        chunks.append(line)
+
+    result = ['msgstr ""\n']
+    for chunk in chunks:
+        result.append(f'"{chunk} "\n')
+
+    return result
