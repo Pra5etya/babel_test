@@ -9,13 +9,13 @@ from .translate.cleanup import cleanup_po_files
 
 def register_translate_cli(app: Flask):
     @app.cli.group()
-    def translate():
+    def trans():
         """Translation and localization commands."""
         pass
 
-    translate.command("extract")(extract_messages)
-    translate.command("init")(init_languages)
-    translate.command("run")(compile_translations)
-    translate.command("auto")(auto_translate)
-    translate.command("update")(update_languages)
-    translate.command("clean")(cleanup_po_files)
+    trans.command("extract")(extract_messages)
+    trans.command("init")(init_languages)
+    trans.command("run")(compile_translations)
+    trans.command("auto")(auto_translate)
+    trans.command("update")(update_languages)
+    trans.command("clean")(cleanup_po_files)

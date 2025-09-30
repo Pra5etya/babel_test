@@ -144,30 +144,29 @@ def normalize_output(text: str) -> str:
     )
 
 
-def format_po_multiline(text: str, indent: str = "", width: int = 80) -> list[str]:
+def format_po_multiline(text, indent=""):
     """
-    Format string ke format multi-line untuk .po file.
-    Contoh:
-    msgstr ""
-    "Kalimat pertama "
-    "lanjutan kalimat."
+    Format string panjang menjadi multiline sesuai aturan gettext (.po).
+    - text: string hasil translasi
+    - indent: indentasi (biasanya "")
+    
+    Aturan:
+    - Pecah string jika lebih dari 80 karakter
+    - Pertahankan newline (\n) dari teks asli
+    - Setiap baris diapit tanda kutip
     """
-    if not text:
-        return ['msgstr ""\n']
+    import textwrap
+    lines = []
 
-    # Pisahkan ke beberapa baris agar tidak melebihi lebar
-    chunks, line = [], ""
-    for word in text.split():
-        if len(line) + len(word) + 1 > width:
-            chunks.append(line)
-            line = word
-        else:
-            line = f"{line} {word}".strip()
-    if line:
-        chunks.append(line)
+    # split manual berdasarkan newline, lalu wrap setiap baris
+    for part in text.split("\n"):
+        wrapped = textwrap.wrap(part, width=80) if part else [""]
+        for w in wrapped:
+            lines.append(f'{indent}"{w}"\n')
 
-    result = ['msgstr ""\n']
-    for chunk in chunks:
-        result.append(f'"{chunk} "\n')
+        # tambahkan newline nyata di PO (kecuali terakhir)
+        if part != text.split("\n")[-1]:
+            lines.append(f'{indent}"\\n"\n')
 
-    return result
+    return lines
+
